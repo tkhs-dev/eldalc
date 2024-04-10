@@ -118,6 +118,9 @@ fun main() {
             return
         }
     }
+    client.close()
+    println("Press any key to exit")
+    readln()
 }
 
 fun removeHtmlTags(input: String): String {
