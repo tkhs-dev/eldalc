@@ -5,139 +5,115 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AlcQuestionResponse(
+data class AlcQuestion15Response(
     @SerialName("description")
-    val description: Description?,
+    val description: Description? = Description(),
     @SerialName("questions")
-    val questions: List<Question?>?,
-    @SerialName("rule")
-    val rule: Rule?,
+    val questions: List<Question?>? = listOf(),
     @SerialName("technicalskill")
-    val technicalskill: Technicalskill?
+    val technicalskill: Technicalskill? = Technicalskill()
 ) {
     @Serializable
     data class Description(
-        @SerialName("answer")
-        val answer: String?,
         @SerialName("question")
-        val question: String?
+        val question: String? = ""
     )
 
     @Serializable
     data class Question(
         @SerialName("answer")
-        val answer: String?,
+        val answer: Answer? = Answer(),
         @SerialName("choices")
-        val choices: List<Choice?>?,
+        val choices: List<Choice?>? = listOf(),
         @SerialName("explanations")
-        val explanations: Explanations?,
+        val explanations: Explanations? = Explanations(),
         @SerialName("question")
-        val question: Question?,
-        @SerialName("voice")
-        val voice: Voice?
+        val question: Question? = Question()
     ) {
+        @Serializable
+        data class Answer(
+            @SerialName("choice")
+            val choice: String? = "",
+            @SerialName("correct")
+            val correct: String? = ""
+        )
+
         @Serializable
         data class Choice(
             @SerialName("symbol")
-            val symbol: String?,
+            val symbol: String? = "",
             @SerialName("text")
-            val text: String?
+            val text: String? = ""
         )
 
         @Serializable
         data class Explanations(
             @SerialName("choices")
-            val choices: Choices?,
-            @SerialName("explanation")
-            val explanation: String?,
+            val choices: Choices? = Choices(),
+            @SerialName("correctanswer")
+            val correctanswer: String? = "",
             @SerialName("question")
-            val question: Question?,
+            val question: Question? = Question(),
+            @SerialName("translation")
+            val translation: String? = "",
             @SerialName("voice")
-            val voice: Voice?
+            val voice: String? = ""
         ) {
             @Serializable
             data class Choices(
                 @SerialName("A")
-                val a: A?,
+                val a: A? = A(),
                 @SerialName("B")
-                val b: B?,
+                val b: B? = B(),
                 @SerialName("C")
-                val c: C?,
+                val c: C? = C(),
                 @SerialName("D")
-                val d: D?
+                val d: D? = D()
             ) {
                 @Serializable
                 data class A(
                     @SerialName("en")
-                    val en: String?
+                    val en: String? = ""
                 )
 
                 @Serializable
                 data class B(
                     @SerialName("en")
-                    val en: String?
+                    val en: String? = ""
                 )
 
                 @Serializable
                 data class C(
                     @SerialName("en")
-                    val en: String?
+                    val en: String? = ""
                 )
 
                 @Serializable
                 data class D(
                     @SerialName("en")
-                    val en: String?
+                    val en: String? = ""
                 )
             }
 
             @Serializable
             data class Question(
                 @SerialName("en")
-                val en: String?,
-                @SerialName("ja")
-                val ja: String?
-            )
-
-            @Serializable
-            data class Voice(
-                @SerialName("normal")
-                val normal: List<String?>?
+                val en: String? = ""
             )
         }
 
         @Serializable
         data class Question(
             @SerialName("en")
-            val en: String?
-        )
-
-        @Serializable
-        data class Voice(
-            @SerialName("normal")
-            val normal: List<String?>?
-        )
-    }
-
-    @Serializable
-    data class Rule(
-        @SerialName("paging")
-        val paging: List<Paging?>?,
-        @SerialName("timelimit")
-        val timelimit: String?
-    ) {
-        @Serializable
-        data class Paging(
-            @SerialName("questionNumber")
-            val questionNumber: String?
+            val en: String? = ""
         )
     }
 
     @Serializable
     data class Technicalskill(
         @SerialName("point")
-        val point: String?,
+        val point: String? = "",
         @SerialName("type")
-        val type: String?
+        val type: String? = ""
     )
 }
