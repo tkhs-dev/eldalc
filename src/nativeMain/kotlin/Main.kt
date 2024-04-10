@@ -124,7 +124,7 @@ fun main() {
 }
 
 fun removeHtmlTags(input: String): String {
-    return input.replace(Regex("<(\"[^\"]*\"|'[^']*'|[^'\">])*>"),"")
+    return input.replace(Regex("<(\"[^\"]*\"|'[^']*'|[^'\">])*>"),"").replace("&nbsp;"," ")
 }
 
 fun isCapableType(input: String): Boolean {
