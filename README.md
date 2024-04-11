@@ -10,3 +10,10 @@ Windows Defenderの設定で除外設定を行うことで警告を出さなく�
 - [ ] TOEFL模擬試験
 ## Platform
 - Windows
+- その他のOSは以下を参考に各自ビルドしてください
+## Build
+``` bash
+git clone https://github.com/tkhs-dev/eldalc.git
+cd eldalc
+./gradlew linkReleaseExecutableNative
+```
