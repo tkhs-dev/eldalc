@@ -4,9 +4,17 @@ import io.ktor.client.engine.winhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import me.archinamon.fileio.File
+import me.archinamon.fileio.readText
+import me.archinamon.fileio.writeText
 import model.*
+import platform.windows.SHCreateDirectoryExA
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 const val APP_NAME = "E-Learning Destroyer for ALC"
 const val VERSION = "1.0.0"
@@ -51,9 +59,7 @@ fun main() {
     println("Enter a Unit number (ex: U001)")
     print(">")
     val unit = readlnOrNull()
-    val unitInfo : AlcUnitInfoResponse = runBlocking{
-        client.get("https://nanext.alcnanext.jp/anetn/course/materials/ALC/TLP/TLP_GR/$unit/06/step_info.json").body()
-    }
+    val unitInfo : AlcUnitInfoResponse = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"step_info.json")
     println("Select a step")
     val steps = unitInfo.steps?.filter { isCapableType(it?.type ?: "") }
     if(steps==null){
@@ -77,9 +83,7 @@ fun main() {
 
     when(steps[stepI]?.type){
         "14" -> {
-            val stepAns: AlcQuestion14Response = runBlocking{
-                client.get(getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json").body()
-            }
+            val stepAns: AlcQuestion14Response = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             for(q in stepAns.questions.orEmpty()){
                 if(q != null){
                     for (c in q.choices.orEmpty()){
@@ -92,9 +96,7 @@ fun main() {
             }
         }
         "15" -> {
-            val stepAns: AlcQuestion15Response = runBlocking{
-                client.get(getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json").body()
-            }
+            val stepAns: AlcQuestion15Response = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             for(q in stepAns.questions.orEmpty()){
                 if(q != null){
                     println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
@@ -109,9 +111,7 @@ fun main() {
             }
         }
         "16" -> {
-            val stepAns: AlcQuestion16Response = runBlocking{
-                client.get(getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json").body()
-            }
+            val stepAns: AlcQuestion16Response = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             for(q in stepAns.questions.orEmpty()){
                 if(q != null){
                     println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
@@ -121,9 +121,7 @@ fun main() {
             }
         }
         "20" -> {
-            val stepAns: AlcQuestion20Response = runBlocking{
-                client.get(getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json").body()
-            }
+            val stepAns: AlcQuestion20Response = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             for(q in stepAns.questions.orEmpty()){
                 if(q != null){
                     println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
@@ -158,5 +156,39 @@ fun isCapableType(input: String): Boolean {
 
 fun getBaseUrl(courseString: String, unit: String?, courseId: String): String {
     return "https://nanext.alcnanext.jp/anetn/course/materials/ALC/TLP/TLP_$courseString/$unit/$courseId/"
+}
+
+@OptIn(ExperimentalEncodingApi::class)
+inline fun <reified T> getApiResourse(client: HttpClient, url: String): T {
+    val cache = fromCacheOrNull<T>(Base64.encode(url.encodeToByteArray()))
+    if(cache != null){
+        return cache
+    }
+    val resp = runBlocking<T>{
+        client.get(url).body()
+    }
+    saveCache(Base64.encode(url.encodeToByteArray()), resp)
+    return resp
+}
+
+inline fun <reified T> fromCacheOrNull(key: String):T?{
+    val file = File("cache/$key")
+    if(file.exists()){
+        return file.readText().let{
+            Json.decodeFromString(it)
+        }
+    }
+    return null
+}
+
+@OptIn(ExperimentalForeignApi::class)
+inline fun <reified T> saveCache(key: String, value: T){
+    val dir = File("cache")
+    if(!dir.exists()){
+        SHCreateDirectoryExA(null, dir.getAbsolutePath(), null)
+    }
+    val file = File("cache/$key")
+    file.createNewFile()
+    file.writeText(Json.encodeToString(value))
 }
 data class SubCourse(val name:String, val courseString:String, val courseId:String )
