@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.tkhs"
-version = "1.0.0"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -37,6 +37,8 @@ kotlin {
             implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
             implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
             implementation("ch.qos.logback:logback-classic:1.5.3")
+            implementation("me.archinamon:file-io:1.3.9")
+            implementation("me.archinamon:file-io-mingwx64:1.3.9")
         }
     }
 }

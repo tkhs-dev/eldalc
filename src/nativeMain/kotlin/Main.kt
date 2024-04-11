@@ -17,7 +17,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 const val APP_NAME = "E-Learning Destroyer for ALC"
-const val VERSION = "1.0.0"
+const val VERSION = "1.1.0"
 
 @kotlinx.serialization.ExperimentalSerializationApi
 fun main() {
