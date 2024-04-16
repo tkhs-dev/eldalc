@@ -59,7 +59,7 @@ fun main() {
     println("Enter a Unit number (ex: U001)")
     print(">")
     val unit = readlnOrNull()
-    val unitInfo : AlcUnitInfoResponse = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"step_info.json")
+    val unitInfo : AlcUnitInfoResponse = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"step_info.json")
     println("Select a step")
     val steps = unitInfo.steps?.filter { isCapableType(it?.type ?: "") }
     if(steps==null){
@@ -83,7 +83,7 @@ fun main() {
 
     when(steps[stepI]?.type){
         "14" -> {
-            val stepAns: AlcQuestion14Response = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
+            val stepAns: AlcQuestion14Response = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             for(q in stepAns.questions.orEmpty()){
                 if(q != null){
                     for (c in q.choices.orEmpty()){
@@ -96,7 +96,7 @@ fun main() {
             }
         }
         "15" -> {
-            val stepAns: AlcQuestion15Response = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
+            val stepAns: AlcQuestion15Response = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             for(q in stepAns.questions.orEmpty()){
                 if(q != null){
                     println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
@@ -111,7 +111,7 @@ fun main() {
             }
         }
         "16" -> {
-            val stepAns: AlcQuestion16Response = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
+            val stepAns: AlcQuestion16Response = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             for(q in stepAns.questions.orEmpty()){
                 if(q != null){
                     println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
@@ -121,7 +121,7 @@ fun main() {
             }
         }
         "20" -> {
-            val stepAns: AlcQuestion20Response = getApiResourse(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
+            val stepAns: AlcQuestion20Response = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             for(q in stepAns.questions.orEmpty()){
                 if(q != null){
                     println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
@@ -159,7 +159,7 @@ fun getBaseUrl(courseString: String, unit: String?, courseId: String): String {
 }
 
 @OptIn(ExperimentalEncodingApi::class)
-inline fun <reified T> getApiResourse(client: HttpClient, url: String): T {
+inline fun <reified T> getApiResource(client: HttpClient, url: String): T {
     val cache = fromCacheOrNull<T>(Base64.encode(url.encodeToByteArray()))
     if(cache != null){
         return cache
