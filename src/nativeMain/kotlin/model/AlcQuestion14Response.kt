@@ -3,6 +3,7 @@ package model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import util.printBorder
 
 @Serializable
 data class AlcQuestion14Response(
@@ -12,7 +13,7 @@ data class AlcQuestion14Response(
     val questions: List<Question?>? = listOf(),
     @SerialName("technicalskill")
     val technicalskill: Technicalskill? = Technicalskill()
-) {
+): IAlcQuestionResponse {
     @Serializable
     data class Description(
         @SerialName("question")
@@ -56,4 +57,17 @@ data class AlcQuestion14Response(
         @SerialName("type")
         val type: String? = ""
     )
+
+    override fun printQuestion() {
+        for(q in this.questions.orEmpty()){
+            if(q != null){
+                for (c in q.choices.orEmpty()){
+                    if(c != null){
+                        println(" (${c.label})${c.correct}")
+                    }
+                }
+            }
+            printBorder()
+        }
+    }
 }

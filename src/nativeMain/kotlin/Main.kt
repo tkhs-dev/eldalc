@@ -84,8 +84,9 @@ fun main() {
         "")
     saveCache("state", stateCache)
 
+    println("  (0)すべて表示")
     for ((index, s) in steps.withIndex()){
-        println("  ($index)${s?.name}")
+        println("  (${index+1})${s?.name}")
     }
     print(">")
     val step = readlnOrNull()
@@ -98,73 +99,35 @@ fun main() {
         println("Error 5")
         return
     }
+    val selectedSteps = if(stepI == 0){
+        steps
+    }else{
+        steps.slice(stepI-1..<stepI)
+    }
 
-    when(steps[stepI]?.type){
-        "14" -> {
-            val stepAns: AlcQuestion14Response = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
-            for(q in stepAns.questions.orEmpty()){
-                if(q != null){
-                    for (c in q.choices.orEmpty()){
-                        if(c != null){
-                            println(" (${c.label})${c.correct}")
-                        }
-                    }
-                }
-                println("------------------------------------------------")
+    for (s in selectedSteps){
+        when(s?.type){
+            "14" -> {
+                getApiResource<AlcQuestion14Response>(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             }
-        }
-        "15" -> {
-            val stepAns: AlcQuestion15Response = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
-            for(q in stepAns.questions.orEmpty()){
-                if(q != null){
-                    println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
-                    for (c in q.choices.orEmpty()){
-                        if(c != null){
-                            println(" (${c.symbol})${c.text}")
-                        }
-                    }
-                    println("A:(${q.answer?.choice})->${q.answer?.correct ?: ""}")
-                }
-                println("------------------------------------------------")
+            "15" -> {
+                getApiResource<AlcQuestion15Response>(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             }
-        }
-        "16" -> {
-            val stepAns: AlcQuestion16Response = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
-            for(q in stepAns.questions.orEmpty()){
-                if(q != null){
-                    println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
-                    println("A:(${q.answer})")
-                }
-                println("------------------------------------------------")
+            "16" -> {
+                getApiResource<AlcQuestion16Response>(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             }
-        }
-        "20" -> {
-            val stepAns: AlcQuestion20Response = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
-            for(q in stepAns.questions.orEmpty()){
-                if(q != null){
-                    println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
-                    for (c in q.choices.orEmpty()){
-                        if(c != null){
-                            println(" (${c.symbol})${c.text}")
-                        }
-                    }
-                    println("A:(${q.answer})")
-                }
-                println("------------------------------------------------")
+            "20" -> {
+                getApiResource<AlcQuestion20Response>(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
             }
-        }
-        else -> {
-            println("Error 6")
-            return
-        }
+            else -> {
+                println("Error 6")
+                return
+            }
+        }.printQuestion()
     }
     client.close()
     println("Press any key to exit")
     readln()
-}
-
-fun removeHtmlTags(input: String): String {
-    return input.replace(Regex("<(\"[^\"]*\"|'[^']*'|[^'\">])*>"),"").replace("&nbsp;"," ")
 }
 
 fun isCapableType(input: String): Boolean {

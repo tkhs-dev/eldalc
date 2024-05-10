@@ -3,6 +3,8 @@ package model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import util.printBorder
+import util.removeHtmlTags
 
 @Serializable
 data class AlcQuestion16Response(
@@ -12,7 +14,7 @@ data class AlcQuestion16Response(
     val questions: List<Question?>? = listOf(),
     @SerialName("technicalskill")
     val technicalskill: Technicalskill? = Technicalskill()
-) {
+): IAlcQuestionResponse{
     @Serializable
     data class Description(
         @SerialName("question")
@@ -60,4 +62,14 @@ data class AlcQuestion16Response(
         @SerialName("type")
         val type: String? = ""
     )
+
+    override fun printQuestion() {
+        for(q in this.questions.orEmpty()){
+            if(q != null){
+                println("Q:${q.question?.en?.let{removeHtmlTags(it)} ?: "No question"}")
+                println("A:(${q.answer})")
+            }
+            printBorder()
+        }
+    }
 }
