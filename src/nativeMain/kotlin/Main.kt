@@ -32,12 +32,16 @@ fun main() {
             )
         }
     }
-    val subCourses = setOf<SubCourse>(
+    var stateCache = fromCacheOrNull<StateCache>("state") ?: StateCache("", "", "", "")
+    val subCourses = mutableSetOf<SubCourse>(
         SubCourse("リスニング","LI", "01"),
         SubCourse("文法","GR","06"),
         SubCourse("リーディング","RE","03"),
         //SubCourse("テスト","JT","08"), //This course is not supported
     )
+    if (stateCache.courseString.isNotBlank() && stateCache.courseId.isNotBlank()){
+        subCourses.add(SubCourse("前回のユニット",stateCache.courseString,stateCache.courseId))
+    }
     println("Select a sub-course")
     for ((index, s) in subCourses.withIndex()){
         println("  ($index)${s.name}")
@@ -48,6 +52,7 @@ fun main() {
         println("Error 1")
         return
     }
+
     val subCourse = subCourseI.toIntOrNull()
     if(subCourse == null){
         println("Error 2")
@@ -56,9 +61,14 @@ fun main() {
     val courseString = subCourses.elementAt(subCourse).courseString
     val courseId = subCourses.elementAt(subCourse).courseId
 
-    println("Enter a Unit number (ex: U001)")
-    print(">")
-    val unit = readlnOrNull()
+    val unit = if (subCourse == subCourses.size-1){
+        stateCache.unit
+    }else{
+        println("Enter a Unit number (ex: U001)")
+        print(">")
+        readlnOrNull()
+    }
+
     val unitInfo : AlcUnitInfoResponse = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"step_info.json")
     println("Select a step")
     val steps = unitInfo.steps?.filter { isCapableType(it?.type ?: "") }
@@ -66,6 +76,14 @@ fun main() {
         println("Error 3")
         return
     }
+
+    stateCache = StateCache(
+        courseString,
+        courseId,
+        unit ?: "",
+        "")
+    saveCache("state", stateCache)
+
     for ((index, s) in steps.withIndex()){
         println("  ($index)${s?.name}")
     }
