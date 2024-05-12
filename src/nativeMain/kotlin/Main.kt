@@ -17,7 +17,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 const val APP_NAME = "E-Learning Destroyer for ALC"
-const val VERSION = "1.1.0"
+const val VERSION = "1.1.1"
 
 @kotlinx.serialization.ExperimentalSerializationApi
 fun main() {
@@ -33,13 +33,14 @@ fun main() {
         }
     }
     var stateCache = fromCacheOrNull<StateCache>("state") ?: StateCache("", "", "", "")
+    val stateCacheExist = stateCache.courseString.isNotBlank() && stateCache.courseId.isNotBlank()
     val subCourses = mutableSetOf<SubCourse>(
         SubCourse("リスニング","LI", "01"),
         SubCourse("文法","GR","06"),
         SubCourse("リーディング","RE","03"),
         //SubCourse("テスト","JT","08"), //This course is not supported
     )
-    if (stateCache.courseString.isNotBlank() && stateCache.courseId.isNotBlank()){
+    if (stateCacheExist){
         subCourses.add(SubCourse("前回のユニット",stateCache.courseString,stateCache.courseId))
     }
     println("Select a sub-course")
@@ -61,7 +62,7 @@ fun main() {
     val courseString = subCourses.elementAt(subCourse).courseString
     val courseId = subCourses.elementAt(subCourse).courseId
 
-    val unit = if (subCourse == subCourses.size-1){
+    val unit = if (stateCacheExist && subCourse == subCourses.size-1){
         stateCache.unit
     }else{
         println("Enter a Unit number (ex: U001)")
@@ -105,19 +106,20 @@ fun main() {
         steps.slice(stepI-1..<stepI)
     }
 
-    for (s in selectedSteps){
+    for ((index,s) in selectedSteps.withIndex()){
+        val url = getBaseUrl(courseString,unit,courseId)+"${steps[index]?.id}.json"
         when(s?.type){
             "14" -> {
-                getApiResource<AlcQuestion14Response>(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
+                getApiResource<AlcQuestion14Response>(client, url)
             }
             "15" -> {
-                getApiResource<AlcQuestion15Response>(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
+                getApiResource<AlcQuestion15Response>(client, url)
             }
             "16" -> {
-                getApiResource<AlcQuestion16Response>(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
+                getApiResource<AlcQuestion16Response>(client, url)
             }
             "20" -> {
-                getApiResource<AlcQuestion20Response>(client, getBaseUrl(courseString,unit,courseId)+"${steps[stepI]?.id}.json")
+                getApiResource<AlcQuestion20Response>(client, url)
             }
             else -> {
                 println("Error 6")
