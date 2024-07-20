@@ -17,7 +17,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 const val APP_NAME = "E-Learning Destroyer for ALC"
-const val VERSION = "1.1.1"
+const val VERSION = "1.2.0"
 
 @kotlinx.serialization.ExperimentalSerializationApi
 fun main() {
@@ -38,7 +38,7 @@ fun main() {
         SubCourse("リスニング","LI", "01"),
         SubCourse("文法","GR","06"),
         SubCourse("リーディング","RE","03"),
-        //SubCourse("テスト","JT","08"), //This course is not supported
+        SubCourse("テスト","JT","08"), //This course is not supported
     )
     if (stateCacheExist){
         subCourses.add(SubCourse("前回のユニット",stateCache.courseString,stateCache.courseId))
@@ -70,9 +70,15 @@ fun main() {
         readlnOrNull()
     }
 
-    val unitInfo : AlcUnitInfoResponse = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"step_info.json")
+    val steps = if(courseString == "JT"){
+        val unitInfo : AlcJTUnitInfoResponse = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"step_info.json")
+        unitInfo.sections?.flatMap { it.steps }?.filter { isCapableType(it?.type ?: "") }
+    }else{
+        val unitInfo : AlcUnitInfoResponse = getApiResource(client, getBaseUrl(courseString,unit,courseId)+"step_info.json")
+        unitInfo.steps?.filter { isCapableType(it?.type ?: "") }
+    }
+
     println("Select a step")
-    val steps = unitInfo.steps?.filter { isCapableType(it?.type ?: "") }
     if(steps==null){
         println("Error 3")
         return
