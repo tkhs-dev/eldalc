@@ -27,6 +27,8 @@ data class AlcQuestion20Response(
 
     @Serializable
     data class Question(
+        @SerialName("id")
+        val id: String? = "",
         @SerialName("answer")
         val answer: String? = "",
         @SerialName("choices")
@@ -36,7 +38,7 @@ data class AlcQuestion20Response(
         @SerialName("question")
         val question: Question? = Question(),
         @SerialName("voice")
-        val voice: Voice? = Voice()
+        val voice: Voice? = Voice(),
     ) {
         @Serializable
         data class Choice(
