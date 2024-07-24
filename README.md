@@ -7,7 +7,7 @@ Windows Defenderの設定で除外設定を行うことで警告を出さなく�
 - [x] リスニング
 - [x] 文法
 - [x] リーディング
-- [ ] TOEFL模擬試験
+- [x] TOEFL模擬試験
 ## Platform
 - Windows
 - その他のOSは以下を参考に各自ビルドしてください
